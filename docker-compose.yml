@@ -1,0 +1,56 @@
+services:
+  postgres_dev:
+    image: postgres:latest
+    container_name: requestservice-postgres-dev
+    environment:
+      POSTGRES_USER: ${DB_DEV_USER}
+      POSTGRES_PASSWORD: ${DB_DEV_PASSWORD}
+      POSTGRES_DB: ${DB_DEV_NAME}
+    ports:
+      - "${DB_DEV_PORT}:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+
+  postgres_test:
+    image: postgres:latest
+    container_name: requestservice-postgres-test
+    environment:
+      POSTGRES_USER: ${DB_TEST_USER}
+      POSTGRES_PASSWORD: ${DB_TEST_PASSWORD}
+      POSTGRES_DB: ${DB_TEST_NAME}
+    ports:
+      - "${DB_TEST_PORT}:5432"
+    volumes:
+      - postgres_data_test:/var/lib/postgresql/data
+
+  app_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: requestservice-app-dev
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_dev:5432/${DB_DEV_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_DEV_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_DEV_PASSWORD}
+    depends_on:
+      - postgres_dev
+    ports:
+      - "${APP_DEV_PORT}:8080"
+
+  app_test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: requestservice-app-test
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_test:5432/${DB_TEST_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_TEST_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_TEST_PASSWORD}
+    depends_on:
+      - postgres_test
+    ports:
+      - "${APP_TEST_PORT}:8080"
+
+volumes:
+  postgres_data_dev:
+  postgres_data_test:
