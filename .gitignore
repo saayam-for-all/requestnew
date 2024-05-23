@@ -34,7 +34,7 @@ build/
 
 ### Environment Variables ###
 /.env
-
+.env
 *.jar
 
 
