@@ -51,6 +51,7 @@ services:
     ports:
       - "${APP_TEST_PORT}:8080"
 
+
 volumes:
   postgres_data_dev:
   postgres_data_test:

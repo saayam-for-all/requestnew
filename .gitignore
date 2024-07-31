@@ -36,5 +36,11 @@ build/
 /.env
 .env
 *.jar
+.env.example
+
+# Ignore specific properties files
+/resources/application.properties
+/resources/application-secrets.properties
+
 
 
