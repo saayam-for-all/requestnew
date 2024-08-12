@@ -1,6 +1,7 @@
 package org.sfa.request.service.impl;
 
 import org.sfa.request.constant.SaayamStatusCode;
+import org.sfa.request.model.enums.RequestForEnum;
 import org.sfa.request.response.PagedResponse;
 import org.sfa.request.dto.RequestDTO;
 import org.sfa.request.exception.types.ConflictException;
@@ -65,6 +66,8 @@ public class RequestServiceImpl implements RequestService {
     private static final Logger logger = LoggerFactory.getLogger(RequestServiceImpl.class);
 
     private final RequestRepository requestRepository;
+
+    private final VolunteersAssignedRepository volunteersAssignedRepository;
     private final RequestStatusRepository requestStatusRepository;
     private final RequestPriorityRepository requestPriorityRepository;
     private final RequestTypeRepository requestTypeRepository;
@@ -118,6 +121,53 @@ public class RequestServiceImpl implements RequestService {
         PagedResponse<Request> pagedResponse = new PagedResponse<>(requests);
 
         logger.info("Retrieved {} requests for requester ID: {}", requests.getContent().size(), requesterId);
+        String message = messageSource.getMessage("success.requestsRetrieved", null, locale);
+        return SaayamResponse.success(SaayamStatusCode.SUCCESS, message, pagedResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SaayamResponse<PagedResponse<Request>> getRequestsWithRequestFor(String requesterId, RequestForEnum requestFor, Optional<Pageable> optionalPageable, Locale locale) {
+        Pageable pageable = optionalPageable.orElse(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "requestId")));
+
+        Sort sort = Optional.ofNullable(pageable.getSort())
+                .filter(Sort::isSorted)
+                .orElse(Sort.by(Sort.Direction.DESC, "requestId"));
+
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        Page<Request> requests;
+
+        if (RequestForEnum.SELF.equals(requestFor) || RequestForEnum.OTHER.equals(requestFor)) {
+            requests = requestRepository.findAllActiveRequestsBasedOnRequestType(requesterId, requestFor, RequestStatusEnum.DELETED.getId(), sortedPageable);
+        } else {
+            throw new IllegalArgumentException("Invalid request type: " + requestFor);
+        }
+
+        PagedResponse<Request> pagedResponse = new PagedResponse<>(requests);
+
+        logger.info("Retrieved {} requests for requester ID: {} raised for: {}", requests.getContent().size(), requesterId, requestFor);
+        String message = messageSource.getMessage("success.requestsRetrieved", null, locale);
+        return SaayamResponse.success(SaayamStatusCode.SUCCESS, message, pagedResponse);
+    }
+
+    @Override
+    public SaayamResponse<PagedResponse<VolunteersAssigned>> getManagedRequests(String requesterId, Optional<Pageable> optionalPageable, Locale locale) {
+        Pageable pageable = optionalPageable.orElse(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "volunteersAssignedId")));
+
+        Sort sort = Optional.ofNullable(pageable.getSort())
+                .filter(Sort::isSorted)
+                .orElse(Sort.by(Sort.Direction.DESC, "volunteersAssignedId"));
+
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        Page<VolunteersAssigned> requests;
+
+        requests = volunteersAssignedRepository.findAllManagedRequests(requesterId, sortedPageable);
+
+        PagedResponse<VolunteersAssigned> pagedResponse = new PagedResponse<>(requests);
+
+        logger.info("Retrieved {} managed requests for volunteer ID: {}", requests.getContent().size(), requesterId);
         String message = messageSource.getMessage("success.requestsRetrieved", null, locale);
         return SaayamResponse.success(SaayamStatusCode.SUCCESS, message, pagedResponse);
     }

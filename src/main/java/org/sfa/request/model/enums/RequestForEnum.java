@@ -13,6 +13,15 @@ public enum RequestForEnum {
     RequestForEnum(int id) {
         this.id = id;
     }
+
+    public static RequestForEnum fromString(String value) {
+        for (RequestForEnum requestFor : values()) {
+            if (requestFor.name().equalsIgnoreCase(value)) {
+                return requestFor;
+            }
+        }
+        throw new IllegalArgumentException("Unknown request type: " + value);
+    }
 }
 
 

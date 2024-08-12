@@ -1,5 +1,7 @@
 package org.sfa.request.service.api;
 
+import org.sfa.request.model.entity.VolunteersAssigned;
+import org.sfa.request.model.enums.RequestForEnum;
 import org.sfa.request.response.PagedResponse;
 import org.sfa.request.model.entity.Request;
 import org.sfa.request.dto.RequestDTO;
@@ -8,6 +10,7 @@ import org.sfa.request.response.SaayamResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * ClassName: RequestService
@@ -26,4 +29,6 @@ public interface RequestService {
     SaayamResponse<Void> deleteRequest(String requesterId, String requestId, Locale locale);
     SaayamResponse<Request> cancelRequest(String requesterId, String requestId, Locale locale);
     SaayamResponse<Request> resumeRequest(String requesterId, String requestId, Locale locale);
+    SaayamResponse<PagedResponse<Request>> getRequestsWithRequestFor(String requesterId, RequestForEnum requestFor, Optional<Pageable> optionalPageable, Locale locale);
+    SaayamResponse<PagedResponse<VolunteersAssigned>> getManagedRequests(String requesterId, Optional<Pageable> optionalPageable, Locale locale);
 }

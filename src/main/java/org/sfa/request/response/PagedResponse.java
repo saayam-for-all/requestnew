@@ -21,6 +21,7 @@ public class PagedResponse<T> {
     private List<T> content;
     private int pageNo;
     private int pageSize;
+    private long currentPageElements;
     private long totalElements;
     private int totalPages;
     private boolean last;
@@ -30,6 +31,7 @@ public class PagedResponse<T> {
         this.pageNo = page.getNumber();
         this.pageSize = page.getSize();
         this.totalElements = page.getTotalElements();
+        this.currentPageElements = page.getNumberOfElements();
         this.totalPages = page.getTotalPages();
         this.last = page.isLast();
     }

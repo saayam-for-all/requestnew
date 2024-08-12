@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.sfa.request.model.entity.VolunteersAssigned;
+import org.sfa.request.model.enums.RequestForEnum;
 import org.sfa.request.response.PagedResponse;
 import org.sfa.request.model.entity.Request;
 import org.sfa.request.dto.RequestDTO;
@@ -25,6 +27,7 @@ import org.springframework.web.servlet.LocaleResolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * ClassName: RequestController
@@ -148,6 +151,7 @@ public class RequestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+
     @GetMapping("/{requestId}")
     public ResponseEntity<SaayamResponse<Request>> getRequestById(
             @PathVariable @NotNull String requesterId,
@@ -159,6 +163,7 @@ public class RequestController {
         return ResponseEntity.ok(response);
     }
 
+
     @GetMapping
     public ResponseEntity<SaayamResponse<PagedResponse<Request>>> getRequests(
             @PathVariable @NotNull String requesterId,
@@ -167,6 +172,43 @@ public class RequestController {
     ) {
         Locale locale = localeResolver.resolveLocale(request);
         SaayamResponse<PagedResponse<Request>> response = requestService.getRequests(requesterId, pageable, locale);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/self")
+    public ResponseEntity<SaayamResponse<PagedResponse<Request>>> getSelfRequests(
+            @PathVariable @NotNull String requesterId,
+            Pageable pageable,
+            HttpServletRequest request
+    ) {
+        Locale locale = localeResolver.resolveLocale(request);
+        Optional<Pageable> optionalPageable = Optional.ofNullable(pageable);
+        SaayamResponse<PagedResponse<Request>> response = requestService.getRequestsWithRequestFor(requesterId, RequestForEnum.SELF, optionalPageable, locale);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/others")
+    public ResponseEntity<SaayamResponse<PagedResponse<Request>>> getOtherRequests(
+            @PathVariable @NotNull String requesterId,
+            Pageable pageable,
+            HttpServletRequest request
+    ) {
+        Locale locale = localeResolver.resolveLocale(request);
+        Optional<Pageable> optionalPageable = Optional.ofNullable(pageable);
+        SaayamResponse<PagedResponse<Request>> response = requestService.getRequestsWithRequestFor(requesterId, RequestForEnum.OTHER, optionalPageable, locale);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/managed")
+    public ResponseEntity<SaayamResponse<PagedResponse<VolunteersAssigned>>> getManagedRequests(
+            @PathVariable @NotNull String requesterId,
+            Pageable pageable,
+            HttpServletRequest request
+    ) {
+        Locale locale = localeResolver.resolveLocale(request);
+        Optional<Pageable> optionalPageable = Optional.ofNullable(pageable);
+        SaayamResponse<PagedResponse<VolunteersAssigned>> response = requestService.getManagedRequests(requesterId, optionalPageable, locale);
         return ResponseEntity.ok(response);
     }
 
