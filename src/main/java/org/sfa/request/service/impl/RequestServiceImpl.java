@@ -1,9 +1,9 @@
 package org.sfa.request.service.impl;
 
 import org.sfa.request.constant.SaayamStatusCode;
+import org.sfa.request.dto.*;
 import org.sfa.request.model.enums.RequestForEnum;
 import org.sfa.request.response.PagedResponse;
-import org.sfa.request.dto.RequestDTO;
 import org.sfa.request.exception.types.ConflictException;
 import org.sfa.request.exception.types.EnumUnspecifiedException;
 import org.sfa.request.exception.types.InvalidRequestException;
@@ -14,19 +14,19 @@ import org.sfa.request.repository.*;
 import org.sfa.request.response.SaayamResponse;
 import lombok.RequiredArgsConstructor;
 import org.sfa.request.service.api.RequestService;
+import org.sfa.request.util.DateFormatterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.Locale;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * ClassName: RequestServiceImpl
@@ -127,29 +127,45 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional(readOnly = true)
-    public SaayamResponse<PagedResponse<Request>> getRequestsWithRequestFor(String requesterId, RequestForEnum requestFor, Optional<Pageable> optionalPageable, Locale locale) {
-        Pageable pageable = optionalPageable.orElse(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "requestId")));
+    public SaayamResponse<PagedResponse<Request>> getRequestsWithRequestFor(
+            String requesterId, RequestForEnum requestFor, Optional<Pageable> optionalPageable, Locale locale) {
 
+        Pageable pageable = optionalPageable.orElse(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "requestId")));
         Sort sort = Optional.ofNullable(pageable.getSort())
                 .filter(Sort::isSorted)
                 .orElse(Sort.by(Sort.Direction.DESC, "requestId"));
-
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
         Page<Request> requests;
-
         if (RequestForEnum.SELF.equals(requestFor) || RequestForEnum.OTHER.equals(requestFor)) {
             requests = requestRepository.findAllActiveRequestsBasedOnRequestType(requesterId, requestFor, RequestStatusEnum.DELETED.getId(), sortedPageable);
         } else {
             throw new IllegalArgumentException("Invalid request type: " + requestFor);
         }
 
-        PagedResponse<Request> pagedResponse = new PagedResponse<>(requests);
+        // Format dates directly in the DTO
+        List<Request> formattedRequests = requests.getContent().stream()
+                .map(request -> {
+                    request.setFormattedSubmittedAt(request.getSubmittedAt() != null
+                            ? DateFormatterUtil.formatDate(request.getSubmittedAt(), locale) : null);
+                    request.setFormattedServicedAt(request.getServicedAt() != null
+                            ? DateFormatterUtil.formatDate(request.getServicedAt(), locale) : null);
+                    request.setFormattedLastUpdatedAt(request.getLastUpdatedAt() != null
+                            ? DateFormatterUtil.formatDate(request.getLastUpdatedAt(), locale) : null);
 
-        logger.info("Retrieved {} requests for requester ID: {} raised for: {}", requests.getContent().size(), requesterId, requestFor);
+                    return request;
+                })
+                .collect(Collectors.toList());
+
+        Page<Request> page = new PageImpl<>(formattedRequests, pageable, requests.getTotalElements());
+
+        PagedResponse<Request> pagedResponse = new PagedResponse<>(page);
+
         String message = messageSource.getMessage("success.requestsRetrieved", null, locale);
+
         return SaayamResponse.success(SaayamStatusCode.SUCCESS, message, pagedResponse);
     }
+
 
     @Override
     public SaayamResponse<PagedResponse<VolunteersAssigned>> getManagedRequests(String requesterId, Optional<Pageable> optionalPageable, Locale locale) {

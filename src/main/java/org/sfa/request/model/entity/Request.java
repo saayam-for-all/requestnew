@@ -105,4 +105,9 @@ public class Request implements Serializable {
 
     @Column(name = "last_update_date", columnDefinition = "TIMESTAMP")
     private ZonedDateTime lastUpdatedAt;
+
+    // Transient fields for formatted dates
+    private transient String formattedSubmittedAt;
+    private transient String formattedServicedAt;
+    private transient String formattedLastUpdatedAt;
 }
