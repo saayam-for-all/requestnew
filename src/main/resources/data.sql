@@ -33,12 +33,26 @@ ON CONFLICT (request_type_id) DO NOTHING;
 -- Insert initial data into request_category table
 INSERT INTO request_category (request_category_id, request_category, request_category_desc, last_updated_date)
 VALUES
-    (0, 'UNSPECIFIED', 'Unspecified category', now()),
-    (1, 'TECHNICAL_SUPPORT', 'Technical support request', now()),
-    (2, 'FINANCIAL_SUPPORT', 'Financial support request', now()),
-    (3, 'LEGAL_SUPPORT', 'Legal support request', now()),
-    (4, 'OTHER', 'Other types of support request', now())
+    (0, 'CLOTHES', 'Clothing-related request', now()),
+    (1, 'COLLEGE_ADMISSIONS', 'College admissions-related request', now()),
+    (2, 'COOKING', 'Cooking-related request', now()),
+    (3, 'EDUCATION', 'Education-related request', now()),
+    (4, 'EMPLOYMENT', 'Employment-related request', now()),
+    (5, 'FINANCE', 'Finance-related request', now()),
+    (6, 'FOOD', 'Food-related request', now()),
+    (7, 'GARDENING', 'Gardening-related request', now()),
+    (8, 'HOMELESSNESS', 'Homelessness-related request', now()),
+    (9, 'HOUSING', 'Housing-related request', now()),
+    (10, 'JOBS', 'Jobs-related request', now()),
+    (11, 'INVESTING', 'Investing-related request', now()),
+    (12, 'MATRIMONIAL', 'Matrimonial-related request', now()),
+    (13, 'MEDICAL', 'Medical-related request', now()),
+    (14, 'SCHOOL', 'School-related request', now()),
+    (15, 'SHOPPING', 'Shopping-related request', now()),
+    (16, 'SPORTS', 'Sports-related request', now()),
+    (17, 'STOCKS', 'Stocks-related request', now())
 ON CONFLICT (request_category_id) DO NOTHING;
+
 
 -- Insert initial data into request_for table
 INSERT INTO request_for (request_for_id, request_for, request_for_desc, last_updated_date)
@@ -86,7 +100,17 @@ VALUES
     (0, 1, 0, 'John Doe', 'john.doe@example.com', 0, 2, now()),
     (1, 2, 0, 'Jane Smith', 'jane.smith@example.com', 0, 2, now()),
     (2, 0, 0, 'Alice Johnson', 'alice.johnson@example.com', 0, 2, now()),
-    (3, 0, 0, 'Bob Brown', 'bob.brown@example.com', 0, 2, now())
+    (3, 0, 0, 'Bob Brown', 'bob.brown@example.com', 0, 2, now()),
+    (4, 1, 0, 'Charlie Davis', 'charlie.davis@example.com', 0, 2, now()),
+    (5, 2, 0, 'Emily White', 'emily.white@example.com', 0, 2, now()),
+    (6, 0, 0, 'Frank Black', 'frank.black@example.com', 0, 2, now()),
+    (7, 1, 0, 'Grace Lee', 'grace.lee@example.com', 0, 2, now()),
+    (8, 2, 0, 'Hannah Green', 'hannah.green@example.com', 0, 2, now()),
+    (9, 0, 0, 'Ivy Scott', 'ivy.scott@example.com', 0, 2, now()),
+    (10, 1, 0, 'Jack Wilson', 'jack.wilson@example.com', 0, 2, now()),
+    (11, 2, 0, 'Kara Young', 'kara.young@example.com', 0, 2, now()),
+    (12, 0, 0, 'Liam King', 'liam.king@example.com', 0, 2, now()),
+    (13, 1, 0, 'Mia Allen', 'mia.allen@example.com', 0, 2, now())
 ON CONFLICT (user_id) DO NOTHING;
 
 
