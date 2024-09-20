@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saayam-demo-dp
+  labels:
+    app: saayam-demo
+  namespace: kube-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: saayam-demo
+  template:
+    metadata:
+      labels:
+        app: saayam-demo
+    spec:
+      containers:
+        - name: <your-container-name>
+          image: <your-ecr-repo-url>:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://<your-database-url>:5432/<your-database-name>"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "<your-database-username>"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "<your-database-password>"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
