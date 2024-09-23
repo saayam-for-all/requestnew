@@ -231,7 +231,7 @@ public class RequestController {
 
     @PostMapping("/sendToSqs")
     public void sendMessage(@RequestBody Map<String, String> payload) {
-        String queueUrl = "https://sqs.us-east-1.amazonaws.com/992382592437/AsyncNotificationQueue";
+        String queueUrl = "write-your-queueURL-here";
         String phone = payload.get("Phone");
         String email = payload.get("Email");
 
