@@ -1,5 +1,6 @@
 package org.sfa.request.service.impl;
 
+//import jakarta.websocket.SendResult;
 import org.sfa.request.constant.SaayamStatusCode;
 import org.sfa.request.response.PagedResponse;
 import org.sfa.request.dto.RequestDTO;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.sfa.request.service.api.RequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,8 +24,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -72,6 +77,9 @@ public class RequestServiceImpl implements RequestService {
     private final RequestForRepository requestForRepository;
     private final MessageSource messageSource;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @Override
     @Transactional
     public SaayamResponse<Request> createRequest(String requesterId, RequestDTO requestDTO, Locale locale) {
@@ -97,6 +105,12 @@ public class RequestServiceImpl implements RequestService {
         logger.info("Created request with ID: {}", savedRequest.getRequestId());
         String message = messageSource.getMessage("success.requestCreated", new Object[]{savedRequest.getRequestId()}, locale);
         return SaayamResponse.success(SaayamStatusCode.REQUEST_CREATED, message, savedRequest);
+    }
+
+    public List sendRequestToVolunteerService(Request request) {
+        String volunteerServiceUrl = "write-your-VolunteerServiceUrl-toFindTop10-here";
+        List topVolunteers = restTemplate.postForObject(volunteerServiceUrl, request, List.class);
+        return topVolunteers;
     }
 
     @Override
