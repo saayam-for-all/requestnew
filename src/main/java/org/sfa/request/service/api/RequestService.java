@@ -7,6 +7,7 @@ import org.sfa.request.response.SaayamResponse;
 
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -26,4 +27,5 @@ public interface RequestService {
     SaayamResponse<Void> deleteRequest(String requesterId, String requestId, Locale locale);
     SaayamResponse<Request> cancelRequest(String requesterId, String requestId, Locale locale);
     SaayamResponse<Request> resumeRequest(String requesterId, String requestId, Locale locale);
+    List sendRequestToVolunteerService(Request request);
 }
