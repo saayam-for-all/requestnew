@@ -14,6 +14,8 @@ import org.sfa.request.dto.RequestDTO;
 import org.sfa.request.service.api.RequestService;
 import org.sfa.request.response.SaayamResponse;
 import lombok.RequiredArgsConstructor;
+import org.sfa.request.service.api.SqsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,10 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.web.servlet.LocaleResolver;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * ClassName: RequestController
@@ -44,6 +49,9 @@ public class RequestController {
 
     private final RequestService requestService;
     private final LocaleResolver localeResolver;
+
+    @Autowired
+    private SqsService sqsService;
 
     @Operation(
             summary = "Create a new request",
@@ -148,6 +156,11 @@ public class RequestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping("/findTopVolunteers")
+    public List sendRequestToVolunteerService(@RequestBody Request request){
+        return requestService.sendRequestToVolunteerService(request);
+    }
+
     @GetMapping("/{requestId}")
     public ResponseEntity<SaayamResponse<Request>> getRequestById(
             @PathVariable @NotNull String requesterId,
@@ -214,5 +227,15 @@ public class RequestController {
         Locale locale = localeResolver.resolveLocale(request);
         SaayamResponse<Request> response = requestService.resumeRequest(requesterId, requestId, locale);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/sendToSqs")
+    public void sendMessage(@RequestBody Map<String, String> payload) {
+        String queueUrl = "https://sqs.us-east-1.amazonaws.com/992382592437/AsyncNotificationQueue";
+        String phone = payload.get("Phone");
+        String email = payload.get("Email");
+
+        sqsService.sendMessage(queueUrl, phone, email);
+        System.out.println("Message sent to queue");
     }
 }
