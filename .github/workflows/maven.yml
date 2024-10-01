@@ -22,13 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-  
-    - name: Update application properties
-      run: |
-        echo "spring.datasource.url=jdbc:postgresql://${DB_ENDPOINT}:5432/saayam_db" > src/main/resources/application.properties
-        echo "spring.datasource.username=saayam_ci" >> src/main/resources/application.properties
-        echo "spring.datasource.password=${{ secrets.DB_PASSWORD }}" >> src/main/resources/application.properties
-    
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
