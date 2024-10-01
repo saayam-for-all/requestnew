@@ -22,13 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1  # Change as needed
-
+  
     - name: Update application properties
       run: |
         echo "spring.datasource.url=jdbc:postgresql://${DB_ENDPOINT}:5432/saayam_db" > src/main/resources/application.properties
