@@ -1,5 +1,7 @@
 package org.sfa.request.service.api;
 
+import org.sfa.request.dto.CommentDTO;
+import org.sfa.request.model.entity.Comment;
 import org.sfa.request.response.PagedResponse;
 import org.sfa.request.model.entity.Request;
 import org.sfa.request.dto.RequestDTO;
@@ -26,4 +28,5 @@ public interface RequestService {
     SaayamResponse<Void> deleteRequest(String requesterId, String requestId, Locale locale);
     SaayamResponse<Request> cancelRequest(String requesterId, String requestId, Locale locale);
     SaayamResponse<Request> resumeRequest(String requesterId, String requestId, Locale locale);
+
 }

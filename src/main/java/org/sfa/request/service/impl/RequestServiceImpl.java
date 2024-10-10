@@ -1,6 +1,7 @@
 package org.sfa.request.service.impl;
 
 import org.sfa.request.constant.SaayamStatusCode;
+import org.sfa.request.dto.CommentDTO;
 import org.sfa.request.response.PagedResponse;
 import org.sfa.request.dto.RequestDTO;
 import org.sfa.request.exception.types.ConflictException;
@@ -71,6 +72,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestCategoryRepository requestCategoryRepository;
     private final RequestForRepository requestForRepository;
     private final MessageSource messageSource;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -326,5 +328,8 @@ public class RequestServiceImpl implements RequestService {
 
         Optional.ofNullable(requestDTO.getServicedAt()).ifPresent(request::setServicedAt);
     }
+
+
+
 
 }
